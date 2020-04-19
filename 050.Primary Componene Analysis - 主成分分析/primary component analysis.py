@@ -37,13 +37,13 @@ profile
 # # Primary Component Analysis
 
 # +
-n_factors=3
+n_components=3
 
-pca = PCA(n_components=n_factors, random_state=57)
+pca = PCA(n_components=n_components, random_state=57)
 pca.fit(df_scores)
 
 # +
-df_factor_loading = pd.DataFrame(pca.components_.T, columns=['component_{}'.format(i) for i in range(n_factors)], index=df_scores.columns)
+df_factor_loading = pd.DataFrame(pca.components_.T, columns=['component_{}'.format(i) for i in range(n_components)], index=df_scores.columns)
 
 df_factor_loading
 # -
@@ -68,7 +68,7 @@ df_sample
 # +
 component_scores = pca.transform(df_sample)  # compute factor scores
 
-pd.DataFrame(component_scores, columns=['component_{}'.format(i) for i in range(n_factors)], index=df_sample.index)
+pd.DataFrame(component_scores, columns=['component_{}'.format(i) for i in range(n_components)], index=df_sample.index)
 # -
 
 

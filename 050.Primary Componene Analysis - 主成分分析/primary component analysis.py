@@ -13,10 +13,17 @@
 #     name: python3
 # ---
 
+# +
+import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pandas as pd
 from pandas_profiling import ProfileReport
 from sklearn.decomposition import PCA
+
+
+# %matplotlib inline
+# -
 
 # # import data - データの読み込み
 
@@ -69,6 +76,18 @@ df_sample
 component_scores = pca.transform(df_sample)  # compute factor scores
 
 pd.DataFrame(component_scores, columns=['component_{}'.format(i) for i in range(n_components)], index=df_sample.index)
+# -
+# # explained variance ratio
+
+
+# +
+pca_all = PCA(n_components=12)
+
+pca_all.fit(df_scores)
+
+for i, ratio in enumerate(np.concatenate((np.array([0]), np.cumsum(pca_all.explained_variance_ratio_)))):
+    print('{}'.format(i), 'components:', '{:.2f}'.format(ratio*100), '% are explained')
+plt.plot(list(range(13)), np.concatenate((np.array([0]), np.cumsum(pca_all.explained_variance_ratio_))), 'o-')
 # -
 
 

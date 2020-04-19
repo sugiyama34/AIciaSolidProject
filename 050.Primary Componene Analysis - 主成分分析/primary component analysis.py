@@ -88,6 +88,9 @@ pca_all.fit(df_scores)
 for i, ratio in enumerate(np.concatenate((np.array([0]), np.cumsum(pca_all.explained_variance_ratio_)))):
     print('{}'.format(i), 'components:', '{:.2f}'.format(ratio*100), '% are explained')
 plt.plot(list(range(13)), np.concatenate((np.array([0]), np.cumsum(pca_all.explained_variance_ratio_))), 'o-')
+plt.xlabel('# of components')
+plt.ylabel('explained variance ratio')
+plt.show()
 # -
 
 

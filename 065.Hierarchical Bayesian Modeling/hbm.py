@@ -74,19 +74,18 @@ df_trace
 model_map = pm.find_MAP(model=model)
 model_map
 
-model_map['fun']
-
-np.std(model_map['fun'])
-
 df_trace.loc['fun[0]':'beta_plus', ['mean']].sort_values('mean', ascending=False)
+
+# +
+# top 5 "fun" cideos
 
 df_videos.iloc[[0, 2, 18, 3, 4]]
 
+# +
+# worst 5 "fun" videos
+
 df_videos.iloc[[40, 62, 25, 22, 56]]
-
-df_trace.loc['fun[0]':'beta_plus', 'mean'].describe()
-
-df_video
+# -
 
 # # fun vs comment
 
@@ -135,6 +134,10 @@ df_latent = df_latent.set_index(['index', 'variable']).unstack()
 
 df_latent.describe()
 
+# +
+# correlation between "fun" and "tendency to comment"
+
 df_latent.corr()
+# -
 
 

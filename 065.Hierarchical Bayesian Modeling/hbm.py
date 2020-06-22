@@ -41,6 +41,9 @@ profile
 
 n_videos = len(df_videos)
 
+# +
+# define model and sample
+
 with pm.Model() as model:
     # prior to parameters
     alpha_plus = pm.Normal('alpha_plus', mu=-3, sd=2)
@@ -62,6 +65,7 @@ with pm.Model() as model:
     dislike = pm.Poisson('dislike', mu=lambda_minus, observed=df_videos['低評価件数'])
     
     trace = pm.sample(1500, tune=1000, chains=5, random_seed=57)
+# -
 
 pm.traceplot(trace)
 

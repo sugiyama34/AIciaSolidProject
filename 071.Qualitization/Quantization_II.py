@@ -14,6 +14,7 @@
 # ---
 
 # +
+from adjustText import adjust_text
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -188,7 +189,7 @@ plt.show()
 # - 買われる商品の特徴は、かなりばらついている可能性がある（左の方にも緑がある）
 #     - 好みによって、購買意欲が変わる可能性あり？
 
-# # scatter visualization
+# # scatter visualization of data
 
 # +
 eig_vals, eig_vecs = np.linalg.eig(np.linalg.inv(S_tot).dot(S_between))
@@ -219,6 +220,43 @@ markers = {
 for wanna_buy in ['◯', '△', '×']:
     data = df_data_with_y[df_data_with_y['購買意欲'] == wanna_buy]
     plt.scatter(data['y'], data['y2'], s=1000, marker=markers[wanna_buy], alpha=0.1)
+
+
+# -
+
+# ## scatter visualization of category
+
+def centerize_qualitization(qual):
+    y_volume = np.concatenate([qual[:2], [0]])
+    y_shape = np.concatenate([[0], qual[2: 3]])
+    y_color = np.concatenate([[0], qual[3:]])
+    
+    y_volume = y_volume - y_volume.mean()
+    y_shape = y_shape - y_shape.mean()
+    y_color = y_color - y_color.mean()
+    
+    return np.concatenate([y_volume, y_shape, y_color])
+
+
+# +
+y1 = centerize_qualitization(qualitization_vector)
+y2 = centerize_qualitization(qualitization_vector_2)
+
+df_qualitization = pd.DataFrame(
+    {
+        'category': ['1l', '500ml', '300ml', 'cylinder', 'quad prism', 'red', 'green', 'blue'],
+        'y1': y1,
+        'y2': y2,
+    })
+
+df_qualitization
+
+# +
+plt.scatter(df_qualitization['y1'], df_qualitization['y2'], s=100)
+texts = [plt.text(df_qualitization['y1'][i], df_qualitization['y2'][i], df_qualitization['category'][i], fontsize=18, ha='center', va='center') for i in range(len(df_qualitization))]
+adjust_text(texts)
+
+print("visualiztion of categories")
 # -
 
 

@@ -188,4 +188,37 @@ plt.show()
 # - 買われる商品の特徴は、かなりばらついている可能性がある（左の方にも緑がある）
 #     - 好みによって、購買意欲が変わる可能性あり？
 
+# # scatter visualization
+
+# +
+eig_vals, eig_vecs = np.linalg.eig(np.linalg.inv(S_tot).dot(S_between))
+
+argsort_ev = np.argsort(eig_vals)
+
+idx_eta_square_2 = argsort_ev[-2]
+eta_square_2 = eig_vals[idx_eta_square_2]
+qualitization_vector_2 = eig_vecs[:, idx_eta_square_2]
+
+print('idx_eta_square_2:', idx_eta_square_2)
+print('eta_square_2:', eta_square_2)
+print('qualitization_vector_2:', qualitization_vector_2)
+
+
+# +
+df_data_with_y['y2'] = X[dependent_vars].dot(qualitization_vector_2)
+ 
+df_data_with_y
+
+# +
+markers = {
+    '◯': 'o',
+    '△': '^',
+    '×': 'x',
+}
+
+for wanna_buy in ['◯', '△', '×']:
+    data = df_data_with_y[df_data_with_y['購買意欲'] == wanna_buy]
+    plt.scatter(data['y'], data['y2'], s=1000, marker=markers[wanna_buy], alpha=0.1)
+# -
+
 

@@ -15,11 +15,17 @@
 
 # !pip install pymc3
 
+# +
+import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 from pandas_profiling import ProfileReport
 import pymc3 as pm
+from sklearn.linear_model import LinearRegression
+
+# %matplotlib inline
+# -
 
 # # import data - データの読み込み
 
@@ -81,7 +87,7 @@ model_map
 df_trace.loc['fun[0]':'beta_plus', ['mean']].sort_values('mean', ascending=False)
 
 # +
-# top 5 "fun" cideos
+# top 5 "fun" videos
 
 df_videos.iloc[[14, 9, 3, 13, 41]]
 
@@ -143,5 +149,97 @@ df_latent.describe()
 
 df_latent.corr()
 # -
+# # Additional survey on dependency of #views on #likes/#views 
+
+
+# +
+fig, ax = plt.subplots()
+
+ax.scatter(df_videos['視聴回数'], df_videos['高評価件数'])
+ax.set_xlabel('views', fontsize='xx-large')
+ax.set_ylabel('likes', fontsize='xx-large')
+
+
+# +
+fig, ax = plt.subplots()
+
+ax.scatter(df_videos['ln_視聴回数'], df_videos['ln_高評価件数'])
+ax.set_xlabel('ln_views', fontsize='xx-large')
+ax.set_ylabel('ln_likes', fontsize='xx-large')
+
+# +
+fig, ax = plt.subplots()
+
+ax.scatter(np.log(df_videos['ln_視聴回数']), np.log(df_videos['ln_高評価件数']))
+ax.set_xlabel('ln_ln_views', fontsize='xx-large')
+ax.set_ylabel('ln_ln_likes', fontsize='xx-large')
+
+# +
+fig, ax = plt.subplots(figsize=(10, 5))
+
+data_x = df_videos[['視聴回数']]
+data_y = df_videos['高評価件数']/df_videos['視聴回数']
+
+x_linsp = np.linspace(0, data_x.max()+1000, 1000)
+
+lm = LinearRegression()
+lm.fit(data_x, data_y)
+
+ax.plot(x_linsp, lm.predict(x_linsp), label='regression line', color='orange')
+ax.scatter(data_x, data_y, label='raw data')
+ax.set_xlabel('views', fontsize='xx-large')
+ax.set_ylabel('likes / views', fontsize='xx-large')
+ax.legend(fontsize='x-large')
+# -
+
+# やっぱり、再生数が大きいと、高評価割合が下がるような気がする（気がする）
+#
+# この補正も入れて面白さ度合いを出してみよう！
+
+# # Hierarchical Bayesian Modeling with correction on the above effect
+
+n_videos = len(df_videos)
+
+# +
+# define model and sample
+
+with pm.Model() as model:
+    # prior to parameters
+    alpha_plus = pm.Normal('alpha_plus', mu=-3, sd=2)
+    beta_plus = pm.TruncatedNormal('beta_plus', mu=0, sd=1, lower=0)
+    gamma_plus = pm.TruncatedNormal('gamma_plus', mu=0, sd=1, upper=0)
+    alpha_minus = pm.Normal('alpha_minus', mu=-3, sd=2)
+    beta_minus = pm.TruncatedNormal('beta_minus', mu=0, sd=1, upper=0)
+    
+    # prior to fun
+    fun = pm.Normal('fun', mu=0, sd=1, shape=n_videos)
+    
+    # play
+    play = df_videos['視聴回数']
+    
+    # +1 and -1
+    lambda_plus = pm.math.exp(alpha_plus + beta_plus * fun + gamma_plus * play / 100000000) * play
+    like = pm.Poisson('like', mu=lambda_plus, observed=df_videos['高評価件数'])
+    
+    lambda_minus = pm.math.exp(alpha_minus + beta_minus * fun) * play
+    dislike = pm.Poisson('dislike', mu=lambda_minus, observed=df_videos['低評価件数'])
+    
+    trace = pm.sample(1500, tune=1000, chains=5, random_seed=57)
+# -
+
+pm.traceplot(trace)
+
+# +
+df_trace = pm.summary(trace)
+
+df_trace
+# -
+
+model_map = pm.find_MAP(model=model)
+model_map
+
+df_trace.loc['fun[0]':'beta_plus', ['mean']].sort_values('mean', ascending=False)
+
+# 結果は変わらず。残念。
 
 

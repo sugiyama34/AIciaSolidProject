@@ -6,9 +6,9 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.3
+#       jupytext_version: 1.13.1
 #   kernelspec:
-#     display_name: Python 3
+#     display_name: Python 3 (ipykernel)
 #     language: python
 #     name: python3
 # ---
@@ -146,8 +146,8 @@ plt.show()
 #     a_\text{1l} &= 0.2665 \\
 #     a_\text{500ml} &= 0.7238 \\
 #     a_\text{300ml} &= 0 \\
-#     a_\text{cylinder} &= 0 \\
-#     a_\text{Quadrangular prism} &= 0.2629 \\
+#     a_\text{cylinder} &= 0.2629 \\
+#     a_\text{Quadrangular prism} &= 0 \\
 #     a_\text{Red} &= 0 \\
 #     a_\text{Green} &= -0.1852 \\
 #     a_\text{Blue} &= 0.5492 \\
@@ -156,7 +156,7 @@ plt.show()
 #
 # We can understand the following facts from the above result:
 # - Volume: 500ml is preferred most, 1l is the second
-# - Shape: quadrangular prism is better
+# - Shape: cylinder is better
 # - Color: blue is the best, the second is red, and green is the worst
 # - The characteristics has capability to explain which water bottles are more likely to be preferred.
 # - It is reasonable to say that some types of water bottles won't be best sellers. (items with "×" are placed in left area)
@@ -169,8 +169,8 @@ plt.show()
 #     a_\text{1l} &= 0.2665 \\
 #     a_\text{500ml} &= 0.7238 \\
 #     a_\text{300ml} &= 0 \\
-#     a_\text{cylinder} &= 0 \\
-#     a_\text{Quadrangular prism} &= 0.2629 \\
+#     a_\text{cylinder} &= 0.2629 \\
+#     a_\text{Quadrangular prism} &= 0 \\
 #     a_\text{Red} &= 0 \\
 #     a_\text{Green} &= -0.1852 \\
 #     a_\text{Blue} &= 0.5492 \\
@@ -182,7 +182,7 @@ plt.show()
 #
 # これから、次の結果が読み取れる。
 # - 容積は、500mlが一番好まれ、次に1lが好まれる。
-# - 形は、円柱より4角柱の方が好まれる
+# - 形は、4角柱より円柱の方が好まれる
 # - 色は、青が一番好まれ、次に赤、次に緑である。
 # - 水筒の特徴から、購買意欲がかなり説明できる（ヒストグラムより）
 # - 買われない商品ははっきりしている（青が左に固まっている）
@@ -228,7 +228,7 @@ for wanna_buy in ['◯', '△', '×']:
 
 def centerize_qualitization(qual):
     y_volume = np.concatenate([qual[:2], [0]])
-    y_shape = np.concatenate([[0], qual[2: 3]])
+    y_shape = np.concatenate([qual[2: 3], [0]])
     y_color = np.concatenate([[0], qual[3:]])
     
     y_volume = y_volume - y_volume.mean()
